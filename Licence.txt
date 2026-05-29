@@ -1,0 +1,11 @@
+Copyright (c) 2026 Jonathan Leclere. All rights reserved.
+
+This source code and the "Zakadi" application are the exclusive property of Jonathan Leclere.
+Access to and use of this application are permitted strictly for personal and non-commercial purposes.
+
+Without the prior written consent of the author, it is strictly forbidden to:
+* Copy, distribute, or republish all or any part of this source code.
+* Modify, alter, or create derivative works from this project.
+* Exploit this application or its source code for commercial, lucrative, or advertising purposes.
+
+For any specific use requests or partnerships, please contact me via: return43@hotmail.fr
