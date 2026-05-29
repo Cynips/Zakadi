@@ -40,7 +40,7 @@ Note: Some browsers restrict microphone access when running files locally (via f
 ☕ Support the project
 
 Do you enjoy Zakadi and want to support its continuous development?
-A button is integrated into the app's interface, or you can make a donation directly via PayPal: 
+A button is integrated into the app's interface, or you can make a donation directly via PayPal: paypal.me/cynips
 
 
 ⚖️ Copyright and License
