@@ -1,0 +1,1594 @@
+<!--Copyright (c) 2026 Jonathan Leclere. All rights reserved.
+
+This source code and the "Zakadi" application are the exclusive property of Jonathan Leclere.
+Access to and use of this application are permitted strictly for personal and non-commercial purposes.
+
+Without the prior written consent of the author, it is strictly forbidden to:
+* Copy, distribute, or republish all or any part of this source code.
+* Modify, alter, or create derivative works from this project.
+* Exploit this application or its source code for commercial, lucrative, or advertising purposes.
+
+For any specific use requests or partnerships, please contact me via: return43@hotmail.fr-->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Zakadi - Communication Intuitive</title>
+    <style>
+        /* CSS moderne, natif, ultra-contrasté et réactif au thème système (clair/sombre) */
+        :root {
+            /* Mode Sombre par défaut (Ultra-contraste) */
+            --bg-main: #020617;
+            --bg-header: rgba(15, 23, 42, 0.8);
+            --bg-panel: #0f172a;
+            --bg-control: #1e293b;
+            --bg-control-active: #334155;
+            --border-color: #1e293b;
+            
+            /* Textes à fort contraste */
+            --text-primary: #ffffff; 
+            --text-secondary: #e2e8f0;
+            --text-muted: #64748b;
+            
+            /* Couleurs d'action */
+            --color-emerald: #10b981;
+            --color-red: #f87171; 
+            --color-red-bg: rgba(248, 113, 113, 0.15);
+            --color-red-bg-active: rgba(248, 113, 113, 0.3);
+            --shadow-color: rgba(0, 0, 0, 0.5);
+        }
+
+        @media (prefers-color-scheme: light) {
+            :root {
+                /* Mode Clair (Ultra-contraste) */
+                --bg-main: #f8fafc;
+                --bg-header: rgba(241, 245, 249, 0.85);
+                --bg-panel: #ffffff;
+                --bg-control: #e2e8f0;
+                --bg-control-active: #cbd5e1;
+                --border-color: #cbd5e1;
+                
+                /* Textes à fort contraste */
+                --text-primary: #000000; 
+                --text-secondary: #0f172a;
+                --text-muted: #475569;
+                
+                /* Couleurs d'action */
+                --color-emerald: #059669;
+                --color-red: #dc2626; 
+                --color-red-bg: #fee2e2;
+                --color-red-bg-active: #fca5a5;
+                --shadow-color: rgba(0, 0, 0, 0.1);
+            }
+        }
+
+        /* Réinitialisation de base */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            height: 100vh;
+            height: 100dvh; 
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* En-tête fixe */
+        header {
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--bg-header);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .app-logo-icon {
+            width: 32px;
+            height: 32px;
+            color: var(--color-emerald);
+            transition: color 0.3s, transform 0.3s;
+        }
+
+        .app-logo-icon.active {
+            color: #ef4444;
+            animation: pulse-ring 2s infinite ease-in-out;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--color-emerald);
+            transition: background-color 0.3s;
+        }
+
+        .status-dot.active {
+            background-color: #ef4444;
+        }
+
+        header h1 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+        }
+
+        .filter-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-label {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 36px;
+            height: 20px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border-color);
+            transition: .3s;
+            border-radius: 20px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: var(--text-primary);
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--color-emerald);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(16px);
+        }
+
+        /* Zone de texte principale verrouillée */
+        main {
+            flex: 1 1 0%;
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            overflow: hidden; 
+            position: relative;
+            min-height: 0; 
+        }
+
+        /* Zone de défilement corrigée pour permettre un vrai retour en arrière */
+        .text-scroll-area {
+            flex: 1;
+            overflow-y: auto; 
+            -webkit-overflow-scrolling: touch; 
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            scrollbar-width: none; 
+        }
+
+        .text-scroll-area::-webkit-scrollbar {
+            display: none; 
+        }
+
+        /* Structure de défilement corrigée (pas de justify-content: flex-end qui bloque le scroll) */
+        .scroll-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            min-height: 100%;
+        }
+
+        /* Compensateur flexible pour aligner par le bas sans casser le défilement */
+        .scroll-pusher {
+            flex: 1 1 auto;
+            min-height: 0;
+        }
+
+        .welcome-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 16px;
+            color: var(--text-muted);
+            max-width: 400px;
+            margin: auto; 
+        }
+
+        .welcome-screen svg {
+            color: var(--text-muted);
+        }
+
+        .welcome-title {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .welcome-sub {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .flow-content {
+            width: 100%;
+            font-weight: 700; 
+            line-height: 1.35;
+            letter-spacing: 0.01em;
+            color: var(--text-primary); 
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            margin-bottom: 8px;
+        }
+
+        .interim-display {
+            color: var(--text-primary); 
+            font-style: italic;
+            font-weight: 500;
+            min-height: 1.5em;
+            border-left: 3px solid var(--color-emerald); 
+            padding-left: 8px;
+            margin-bottom: 8px;
+        }
+
+        .wave-container {
+            height: 24px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            margin: 8px 0;
+            flex-shrink: 0;
+        }
+
+        .wave-container.visible {
+            opacity: 1;
+        }
+
+        .wave-bar {
+            width: 4px;
+            border-radius: 2px;
+            background-color: var(--color-emerald);
+            animation: bounce 1.2s infinite ease-in-out;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .wave-bar {
+                animation: none;
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% { height: 6px; }
+            50% { height: 20px; }
+        }
+
+        /* Panneau de contrôle bas */
+        footer {
+            background-color: var(--bg-panel);
+            border-top: 1px solid var(--border-color);
+            padding: 16px 16px 24px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            flex-shrink: 0;
+            box-shadow: 0 -10px 25px -5px var(--shadow-color);
+            z-index: 10;
+        }
+
+        .keyboard-input-container {
+            display: none;
+            width: 100%;
+            background-color: var(--bg-control);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .keyboard-input-container.visible {
+            display: flex;
+        }
+
+        .keyboard-field {
+            flex: 1;
+            background: none;
+            border: none;
+            outline: none;
+            color: var(--text-primary);
+            font-size: 1.125rem;
+            font-family: inherit;
+        }
+
+        .keyboard-field::placeholder {
+            color: var(--text-muted);
+        }
+
+        .control-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .zoom-panel {
+            display: flex;
+            align-items: center;
+            background-color: var(--bg-control);
+            border-radius: 12px;
+            padding: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .control-btn {
+            width: 44px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .control-btn:active {
+            transform: scale(0.95);
+            background-color: var(--bg-control-active);
+        }
+
+        .size-indicator {
+            padding: 0 8px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text-primary);
+            min-width: 54px;
+            text-align: center;
+        }
+
+        .secondary-actions-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-btn-icon {
+            width: 44px;
+            height: 40px;
+            background-color: var(--bg-control);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s, transform 0.1s;
+        }
+
+        .action-btn-icon:active {
+            transform: scale(0.95);
+        }
+
+        .action-btn-icon.active {
+            background-color: var(--bg-control-active);
+            color: var(--color-emerald);
+            border-color: var(--color-emerald);
+        }
+
+        .primary-action-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .mic-trigger-btn {
+            flex: 1; 
+            height: 56px;
+            border-radius: 16px;
+            background-color: var(--color-emerald);
+            color: white;
+            font-weight: 600;
+            font-size: 1.125rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.15);
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .mic-trigger-btn:active {
+            transform: scale(0.98);
+        }
+
+        .mic-trigger-btn.active {
+            background-color: #ef4444;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.25);
+        }
+
+        .mic-icon-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mic-pulse-ring {
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid white;
+            opacity: 0;
+        }
+
+        .mic-pulse-ring.active {
+            animation: pulse-ring 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 0.5; }
+            50% { transform: scale(1.3); opacity: 0; }
+            100% { transform: scale(0.95); opacity: 0; }
+        }
+
+        .clear-trigger-btn {
+            width: 64px; 
+            height: 56px; 
+            border-radius: 16px;
+            background-color: var(--color-red-bg);
+            border: 1px solid rgba(248, 113, 113, 0.15);
+            color: var(--color-red);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s, transform 0.1s;
+            flex-shrink: 0;
+        }
+
+        .clear-trigger-btn:active {
+            transform: scale(0.95);
+            background-color: var(--color-red-bg-active);
+        }
+
+        /* AJUSTEMENTS SPECIFIQUES MODE PAYSAGE SUR SMARTPHONE */
+        @media (orientation: landscape) and (max-height: 500px) {
+            header {
+                padding: 6px 16px; 
+            }
+            header h1 {
+                font-size: 0.95rem;
+            }
+            .filter-container {
+                gap: 4px;
+            }
+            .filter-label {
+                font-size: 0.65rem;
+            }
+            
+            main {
+                padding: 8px 16px;
+                flex-direction: row; 
+                align-items: center;
+                gap: 12px;
+            }
+
+            /* Ticker horizontal fluide */
+            .text-scroll-area {
+                overflow-x: auto; 
+                overflow-y: hidden;
+                flex-direction: row;
+                align-items: center;
+                justify-content: flex-start;
+                width: 100%;
+                white-space: nowrap;
+                scroll-behavior: auto; 
+            }
+
+            .scroll-content {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: flex-start;
+                min-height: auto;
+                width: auto;
+                min-width: 100%;
+            }
+
+            .scroll-pusher {
+                display: none; /* Inutile en mode défilement horizontal */
+            }
+
+            .welcome-screen {
+                flex-direction: row;
+                gap: 12px;
+                max-width: 100%;
+                margin: 0;
+                text-align: left;
+            }
+            .welcome-screen svg {
+                width: 24px;
+                height: 24px;
+                flex-shrink: 0;
+            }
+            .welcome-title {
+                font-size: 0.875rem;
+            }
+            .welcome-sub {
+                display: none; 
+            }
+
+            /* Transcription forcée sur une ligne horizontale */
+            .flow-content {
+                display: inline-flex;
+                flex-direction: row;
+                align-items: center;
+                white-space: nowrap !important;
+                word-wrap: normal !important;
+                overflow-wrap: normal !important;
+                width: auto;
+                max-width: none;
+                margin-bottom: 0;
+            }
+
+            .flow-content p {
+                display: inline;
+                white-space: nowrap !important;
+            }
+
+            .interim-display {
+                display: inline-block !important;
+                white-space: nowrap !important;
+                border-left: none;
+                border-bottom: 3px solid var(--color-emerald);
+                padding-left: 0;
+                margin-bottom: 0;
+                margin-left: 12px;
+                min-height: auto;
+            }
+
+            .wave-container {
+                display: none !important; 
+            }
+
+            /* FUSION DE TOUS LES BOUTONS SUR UNE SEULE LIGNE COMPACTE ALIGNÉE A GAUCHE */
+            footer {
+                padding: 6px 16px 8px 16px;
+                flex-direction: row !important;
+                align-items: center !important;
+                justify-content: flex-start !important; 
+                gap: 8px !important;
+            }
+
+            .keyboard-input-container {
+                position: absolute;
+                bottom: 56px;
+                left: 16px;
+                right: 16px;
+                width: calc(100% - 32px);
+                z-index: 20;
+                background-color: var(--bg-panel);
+                box-shadow: 0 -4px 15px var(--shadow-color);
+            }
+
+            .primary-action-row {
+                order: 1 !important; 
+                width: auto !important;
+                flex-shrink: 0 !important;
+                gap: 6px !important;
+            }
+
+            .mic-trigger-btn {
+                height: 36px;
+                width: 160px; 
+                padding: 0 12px !important;
+                border-radius: 10px;
+                font-size: 0.85rem;
+                flex: none !important;
+            }
+
+            .clear-trigger-btn {
+                height: 36px;
+                width: 40px;
+                border-radius: 10px;
+                flex-shrink: 0 !important;
+            }
+
+            .control-row {
+                order: 2 !important; 
+                width: auto !important;
+                flex-shrink: 0 !important;
+                justify-content: flex-start !important;
+                gap: 8px !important;
+            }
+
+            .zoom-panel {
+                border-radius: 10px;
+                padding: 2px;
+            }
+
+            .control-btn {
+                height: 36px;
+                width: 38px;
+            }
+            .size-indicator {
+                font-size: 0.75rem;
+                min-width: 44px;
+                padding: 0 4px;
+            }
+            .action-btn-icon {
+                height: 36px;
+                width: 38px;
+                border-radius: 10px;
+            }
+        }
+
+        /* Boîte d'alerte */
+        .alert-box {
+            padding: 12px;
+            background-color: var(--bg-panel);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 12px;
+            color: #fbbf24;
+            font-weight: 500;
+            font-size: 0.825rem;
+            text-align: center;
+            margin: 4px 0;
+            box-shadow: 0 4px 10px var(--shadow-color);
+        }
+
+        /* Modal QR Code */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.75);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 16px;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.visible {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 24px;
+            max-width: 360px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 10px 30px var(--shadow-color);
+            color: var(--text-primary);
+        }
+
+        .modal-title {
+            font-weight: 600;
+            font-size: 1.125rem;
+            text-align: center;
+        }
+
+        .qr-canvas-wrapper {
+            background-color: white;
+            padding: 12px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-input {
+            width: 100%;
+            background-color: var(--bg-control);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: var(--text-primary);
+            font-size: 0.825rem;
+            outline: none;
+        }
+
+        .modal-close-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--color-emerald);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .modal-close-btn:active {
+            opacity: 0.9;
+        }
+
+        .modal-text {
+            text-align: center;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: var(--text-secondary);
+        }
+
+        .modal-link {
+            width: 100%;
+            padding: 12px;
+            background-color: #0070ba; /* Couleur PayPal */
+            color: white;
+            border-radius: 10px;
+            font-weight: 600;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+            transition: opacity 0.2s;
+        }
+
+        .modal-link:active {
+            opacity: 0.9;
+        }
+
+        .modal-cancel-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--bg-control);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .modal-cancel-btn:active {
+            background-color: var(--bg-control-active);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- En-tête -->
+    <header>
+        <div class="header-logo">
+            <!-- Icône d'oreille personnalisée avec Z central et ondes -->
+            <svg id="app-logo-svg" class="app-logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
+                <!-- Ondes sonores gauches -->
+                <path d="M 15 35 A 30 30 0 0 0 15 65" stroke-width="3"/>
+                <path d="M 22 40 A 20 20 0 0 0 22 60" stroke-width="3"/>
+                <!-- Silhouette d'oreille humaine -->
+                <path d="M 55 18 C 30 18, 30 55, 45 75 C 55 88, 75 88, 75 75 C 75 68, 68 62, 72 50 C 74 42, 76 35, 72 25 C 68 18, 62 18, 55 18 Z" />
+                <!-- "Z" stylisé au niveau du lobe/canal -->
+                <path d="M 42 38 C 45 32, 60 32, 58 42 C 55 52, 45 58, 48 66 C 50 68, 54 68, 62 65" stroke-width="5.5" />
+                <!-- Ondes sonores droites -->
+                <path d="M 85 40 A 20 20 0 0 1 85 60" stroke-width="3"/>
+                <path d="M 92 35 A 30 30 0 0 1 92 65" stroke-width="3"/>
+            </svg>
+            <div class="status-dot" id="status-indicator"></div>
+            <h1>Zakadi</h1>
+        </div>
+        
+        <div class="filter-container">
+            <span class="filter-label">Filtre bruit</span>
+            <label class="switch">
+                <input type="checkbox" id="noise-filter-toggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+    </header>
+
+    <!-- Zone principale d'affichage du texte -->
+    <main>
+        <div id="text-container" class="text-scroll-area">
+            <div class="scroll-content">
+                <!-- Compensateur flexible pour aligner le contenu court par le bas -->
+                <div id="scroll-pusher" class="scroll-pusher"></div>
+
+                <!-- Message de bienvenue -->
+                <div id="welcome-message" class="welcome-screen">
+                    <!-- Grande icône d'oreille personnalisée stylisée en page d'accueil -->
+                    <svg id="welcome-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" style="width: 72px; height: 72px; margin-bottom: 8px;">
+                        <path d="M 15 35 A 30 30 0 0 0 15 65" stroke-width="3"/>
+                        <path d="M 22 40 A 20 20 0 0 0 22 60" stroke-width="3"/>
+                        <path d="M 55 18 C 30 18, 30 55, 45 75 C 55 88, 75 88, 75 75 C 75 68, 68 62, 72 50 C 74 42, 76 35, 72 25 C 68 18, 62 18, 55 18 Z" />
+                        <path d="M 42 38 C 45 32, 60 32, 58 42 C 55 52, 45 58, 48 66 C 50 68, 54 68, 62 65" stroke-width="5.5" />
+                        <path d="M 85 40 A 20 20 0 0 1 85 60" stroke-width="3"/>
+                        <path d="M 92 35 A 30 30 0 0 1 92 65" stroke-width="3"/>
+                    </svg>
+                    <div>
+                        <p class="welcome-title">Appuyez sur le bouton vert ci-dessous pour parler.</p>
+                        <p class="welcome-sub">La transcription s'affichera ici en temps réel et en grands caractères.</p>
+                    </div>
+                </div>
+
+                <!-- Contenu de transcription dynamique (Ultra-contraste) -->
+                <div id="transcript-flow" class="flow-content"></div>
+                
+                <!-- Affichage temporaire intermédiaire (Ultra-contraste) -->
+                <p id="interim-text" class="interim-display" style="display: none;"></p>
+            </div>
+        </div>
+
+        <!-- Onde visuelle miniature intégrée -->
+        <div id="audio-wave-container" class="wave-container">
+            <div class="wave-bar" style="height: 10px; animation-delay: 0.1s"></div>
+            <div class="wave-bar" style="height: 16px; animation-delay: 0.2s"></div>
+            <div class="wave-bar" style="height: 12px; animation-delay: 0.3s"></div>
+            <div class="wave-bar" style="height: 18px; animation-delay: 0.4s"></div>
+            <div class="wave-bar" style="height: 8px; animation-delay: 0.5s"></div>
+        </div>
+    </main>
+
+    <!-- Panneau de contrôle du bas -->
+    <footer>
+        <!-- Champ de saisie clavier masquable / alternatif -->
+        <div id="keyboard-container" class="keyboard-input-container">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01"/><path d="M10 8h.01"/><path d="M14 8h.01"/><path d="M18 8h.01"/><path d="M6 12h.01"/><path d="M18 12h.01"/><path d="M7 16h10"/><path d="M10 12h4"/></svg>
+            <input type="text" id="keyboard-field" class="keyboard-field" placeholder="Tapez votre message ici...">
+        </div>
+
+        <div class="control-row">
+            <!-- Panel d'ajustement de police -->
+            <div class="zoom-panel">
+                <button id="btn-zoom-out" class="control-btn" aria-label="Diminuer la taille du texte">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="8" x2="16" y1="12" y2="12"/></svg>
+                </button>
+                <span id="font-size-indicator" class="size-indicator">32 px</span>
+                <button id="btn-zoom-in" class="control-btn" aria-label="Agrandir la taille du texte">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="16"/><line x1="8" x2="16" y1="12" y2="12"/></svg>
+                </button>
+            </div>
+
+            <!-- Groupe actions secondaires : Clavier + Copier + QR Code -->
+            <div class="secondary-actions-group">
+                <!-- Bouton Clavier Seul -->
+                <button id="btn-toggle-keyboard" class="action-btn-icon" aria-label="Saisie au clavier">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01"/><path d="M10 8h.01"/><path d="M14 8h.01"/><path d="M18 8h.01"/><path d="M6 12h.01"/><path d="M18 12h.01"/><path d="M7 16h10"/><path d="M10 12h4"/></svg>
+                </button>
+
+                <!-- Bouton Copier Seul -->
+                <button id="btn-copy" class="action-btn-icon" aria-label="Copier la transcription">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+
+                <!-- Bouton QR Code -->
+                <button id="btn-qr" class="action-btn-icon" aria-label="Partager via QR Code">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3z"/><path d="M21 14v7h-4"/><path d="M14 19h4"/></svg>
+                </button>
+
+                <!-- Bouton Buy me a coffee -->
+                <button id="btn-coffee" class="action-btn-icon" aria-label="Soutenir le projet (Buy me a coffee)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" x2="6" y1="2" y2="4"/><line x1="10" x2="10" y1="2" y2="4"/><line x1="14" x2="14" y1="2" y2="4"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Ligne de commande principale -->
+        <div class="primary-action-row">
+            <!-- Bouton Enregistrer Principal (Prend le max de place) -->
+            <button id="btn-mic" class="mic-trigger-btn" aria-label="Lancer l'écoute vocale">
+                <div class="mic-icon-wrapper">
+                    <div id="mic-icon-placeholder">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                    </div>
+                    <div id="mic-pulse" class="mic-pulse-ring"></div>
+                </div>
+                <span id="mic-text">Démarrer l'écoute</span>
+            </button>
+
+            <!-- Bouton Effacer à droite (Compact, rouge clair, icône seule) -->
+            <button id="btn-clear" class="clear-trigger-btn" aria-label="Effacer tout le texte">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+            </button>
+        </div>
+    </footer>
+
+    <!-- Modal pour QR Code -->
+    <div id="qr-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="modal-title">Scanner pour partager</h3>
+            <div class="qr-canvas-wrapper">
+                <canvas id="qr-canvas" width="200" height="200"></canvas>
+            </div>
+            <input type="text" id="qr-url-input" class="modal-input" placeholder="Lien de l'application">
+            <button id="modal-close" class="modal-close-btn">Fermer</button>
+        </div>
+    </div>
+
+    <!-- Modal pour Buy me a coffee -->
+    <div id="coffee-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="modal-title">Buy me a coffee</h3>
+            <p class="modal-text">Vous appréciez Zakadi et souhaitez soutenir son développement ? Vous pouvez faire un don avec un compte PayPal via le lien suivant.</p>
+            <a href="https://paypal.me/cynips" target="_blank" class="modal-link">Faire un don via PayPal</a>
+            <button id="coffee-modal-close" class="modal-cancel-btn">Fermer</button>
+        </div>
+    </div>
+
+    <script>
+        // Références DOM
+        const appLogoSvg = document.getElementById('app-logo-svg');
+        const btnMic = document.getElementById('btn-mic');
+        const micIconPlaceholder = document.getElementById('mic-icon-placeholder');
+        const micPulse = document.getElementById('mic-pulse');
+        const micText = document.getElementById('mic-text');
+        const btnClear = document.getElementById('btn-clear');
+        const btnCopy = document.getElementById('btn-copy');
+        const btnZoomIn = document.getElementById('btn-zoom-in');
+        const btnZoomOut = document.getElementById('btn-zoom-out');
+        const fontSizeIndicator = document.getElementById('font-size-indicator');
+        const textContainer = document.getElementById('text-container');
+        const welcomeMessage = document.getElementById('welcome-message');
+        const transcriptFlow = document.getElementById('transcript-flow');
+        const interimText = document.getElementById('interim-text');
+        const audioWaveContainer = document.getElementById('audio-wave-container');
+        const noiseFilterToggle = document.getElementById('noise-filter-toggle');
+        const statusIndicator = document.getElementById('status-indicator');
+        const btnToggleKeyboard = document.getElementById('btn-toggle-keyboard');
+        const keyboardContainer = document.getElementById('keyboard-container');
+        const keyboardField = document.getElementById('keyboard-field');
+        const btnQr = document.getElementById('btn-qr');
+        const qrModal = document.getElementById('qr-modal');
+        const qrCanvas = document.getElementById('qr-canvas');
+        const qrUrlInput = document.getElementById('qr-url-input');
+        const modalClose = document.getElementById('modal-close');
+        const scrollPusher = document.getElementById('scroll-pusher');
+        const btnCoffee = document.getElementById('btn-coffee');
+        const coffeeModal = document.getElementById('coffee-modal');
+        const coffeeModalClose = document.getElementById('coffee-modal-close');
+
+        // États de l'application
+        let isListening = false;
+        let isKeyboardVisible = false;
+        
+        // Structure de données robuste pour la transcription
+        let accumulatedTranscript = ""; // Historique consolidé des sessions vocales passées
+        let currentSessionFinal = "";    // Texte validé de la session en cours
+
+        // Configuration taille de police sauvegardée
+        let currentFontSize = parseInt(localStorage.getItem('zakadi_fontSize')) || 32;
+        const minFontSize = 18;
+        const maxFontSize = 64;
+
+        // Gestion audio (Filtre anti-bruit)
+        let audioCtx = null;
+        let mediaStream = null;
+        let sourceNode = null;
+        let biquadFilter = null;
+
+        // SVGs intégrés en JS pour éviter les chargements réseau
+        const SVG_MIC = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>`;
+        const SVG_MIC_OFF = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="2" x2="22" y1="2" y2="22"/><path d="M18.89 13.23A7.12 7.12 0 0 0 19 12v-2"/><path d="M5 10v2a7 7 0 0 0 12 5.79"/><path d="M15 9.34V5a3 3 0 0 0-5.68-1.35"/><path d="M9 9v3a3 3 0 0 0 5.12 2.12"/><line x1="12" x2="12" y1="19" y2="22"/></svg>`;
+
+        // Variables pour le défilement horizontal fluide amorti et découplage tactile
+        let targetScrollLeft = 0;
+        let isTickerRunning = false;
+        let isUserScrolling = false;
+        let userScrollTimeout = null;
+        let lastTime = 0;
+        let isScrolledUp = false;
+
+        // --- ALGORITHME DE FUSION INTELLIGENTE ET DE-DUPLICATION DES FLUX (OVERLAP MERGE) ---
+        // Cette fonction mathématique recherche le chevauchement optimal de mots entre la fin d'un texte (A) 
+        // et le début d'un texte (B) pour fusionner de façon invisible les répétitions introduites par Android.
+        function mergeWithOverlap(str1, str2) {
+            str1 = (str1 || "").trim();
+            str2 = (str2 || "").trim();
+            if (!str1) return str2;
+            if (!str2) return str1;
+
+            // Normalisation des chaînes de caractères pour comparaison (minuscules, sans accents ou ponctuation complexe)
+            const clean = (s) => s.toLowerCase()
+                                  .replace(/['’]/g, "'") // Standardisation de l'apostrophe française
+                                  .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?"«»“]/g, "")
+                                  .replace(/\s+/g, " ")
+                                  .trim();
+
+            const words1 = clean(str1).split(" ");
+            const words2 = clean(str2).split(" ");
+
+            let maxOverlapWords = 0;
+            const minLen = Math.min(words1.length, words2.length);
+
+            // Recherche glissante de correspondances de la plus grande séquence vers la plus petite (Optimisation)
+            for (let i = minLen; i >= 1; i--) {
+                const sub1 = words1.slice(-i).join(" ");
+                const sub2 = words2.slice(0, i).join(" ");
+
+                if (sub1 === sub2) {
+                    maxOverlapWords = i;
+                    break; // Le plus grand chevauchement est trouvé
+                }
+            }
+
+            if (maxOverlapWords > 0) {
+                // Un chevauchement a été identifié : on ampute le début de la seconde phrase
+                const origWords2 = str2.split(/\s+/);
+                const nonOverlapPart = origWords2.slice(maxOverlapWords).join(" ");
+                return (str1 + (nonOverlapPart ? " " + nonOverlapPart : "")).trim();
+            }
+
+            // Aucun doublon détecté, simple concaténation avec espace de confort
+            return (str1 + " " + str2).trim();
+        }
+
+        // --- ALGORITHME DE DEFILEMENT AMORTI ET CONTROLE DU SCROLL ---
+        function updateTickerScroll(timestamp) {
+            const isLandscape = window.matchMedia("(orientation: landscape) and (max-height: 500px)").matches;
+            
+            if (!isLandscape || isScrolledUp) {
+                isTickerRunning = false;
+                lastTime = 0;
+                return;
+            }
+
+            if (!lastTime) lastTime = timestamp;
+            const delta = (timestamp - lastTime) / 1000; 
+            lastTime = timestamp;
+
+            const current = textContainer.scrollLeft;
+            const diff = targetScrollLeft - current;
+
+            if (Math.abs(diff) > 0.5) {
+                const speed = 7.5; 
+                textContainer.scrollLeft = current + diff * (1 - Math.exp(-speed * delta));
+                requestAnimationFrame(updateTickerScroll);
+            } else {
+                textContainer.scrollLeft = targetScrollLeft;
+                isTickerRunning = false;
+                lastTime = 0;
+            }
+        }
+
+        // Commande intelligente de défilement vers le bas respectant la lecture de l'utilisateur
+        function triggerSmoothScroll(force = false) {
+            // Si l'utilisateur a fait défiler vers le haut pour lire, on bloque l'auto-scroll (sauf action forcée)
+            if (isScrolledUp && !force) return; 
+            
+            const isLandscape = window.matchMedia("(orientation: landscape) and (max-height: 500px)").matches;
+            if (isLandscape) {
+                targetScrollLeft = textContainer.scrollWidth - textContainer.clientWidth;
+                if (!isTickerRunning) {
+                    isTickerRunning = true;
+                    lastTime = 0;
+                    requestAnimationFrame(updateTickerScroll);
+                }
+            } else {
+                // Défilement vertical fluide natif
+                textContainer.scrollTo({
+                    top: textContainer.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        // --- ECOUTEURS DE DEFILEMENT (POUR BLOQUER L'AUTO-SCROLL SI L'UTILISATEUR LIT PLUS HAUT) ---
+        textContainer.addEventListener('scroll', () => {
+            const isLandscape = window.matchMedia("(orientation: landscape) and (max-height: 500px)").matches;
+            if (isLandscape) {
+                const maxScrollLeft = textContainer.scrollWidth - textContainer.clientWidth;
+                isScrolledUp = textContainer.scrollLeft < maxScrollLeft - 30; // 30px de marge
+            } else {
+                const maxScrollTop = textContainer.scrollHeight - textContainer.clientHeight;
+                isScrolledUp = textContainer.scrollTop < maxScrollTop - 30;
+            }
+        }, { passive: true });
+
+        // --- GESTION DE LA POLICE ---
+        function updateFontSizeUI() {
+            transcriptFlow.style.fontSize = `${currentFontSize}px`;
+            interimText.style.fontSize = `${currentFontSize}px`; 
+            fontSizeIndicator.textContent = `${currentFontSize} px`;
+            localStorage.setItem('zakadi_fontSize', currentFontSize);
+            triggerSmoothScroll();
+        }
+
+        btnZoomIn.addEventListener('click', () => {
+            if (currentFontSize < maxFontSize) {
+                currentFontSize += 2;
+                updateFontSizeUI();
+            }
+        });
+
+        btnZoomOut.addEventListener('click', () => {
+            if (currentFontSize > minFontSize) {
+                currentFontSize -= 2;
+                updateFontSizeUI();
+            }
+        });
+
+        // --- COPIER LE TEXTE DANS LE PRESSE-PAPIERS ---
+        function copyToClipboard() {
+            const textToCopy = mergeWithOverlap(accumulatedTranscript, currentSessionFinal).trim();
+            if (!textToCopy) return;
+
+            const textarea = document.createElement('textarea');
+            textarea.value = textToCopy;
+            textarea.style.position = 'fixed'; 
+            document.body.appendChild(textarea);
+            textarea.select();
+            
+            try {
+                document.execCommand('copy');
+                const originalContent = btnCopy.innerHTML;
+                btnCopy.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+                btnCopy.style.borderColor = "#10b981";
+                
+                setTimeout(() => {
+                    btnCopy.innerHTML = originalContent;
+                    btnCopy.style.borderColor = "";
+                }, 1800);
+            } catch (err) {
+                console.error("Échec de la copie :", err);
+            }
+            
+            document.body.removeChild(textarea);
+        }
+
+        btnCopy.addEventListener('click', copyToClipboard);
+
+        // --- EFFACER LE TEXTE ---
+        function clearText() {
+            accumulatedTranscript = "";
+            currentSessionFinal = "";
+            transcriptFlow.innerHTML = "";
+            interimText.textContent = "";
+            interimText.style.display = "none";
+            keyboardField.value = "";
+            welcomeMessage.style.display = 'flex';
+            scrollPusher.style.display = 'block';
+            targetScrollLeft = 0;
+            isScrolledUp = false;
+            
+            const existingAlert = document.getElementById('system-alert');
+            if (existingAlert) {
+                existingAlert.remove();
+            }
+            triggerSmoothScroll(true);
+        }
+
+        btnClear.addEventListener('click', () => {
+            clearText();
+        });
+
+        // --- SAISIE CLAVIER ALTERNATIVE ---
+        btnToggleKeyboard.addEventListener('click', () => {
+            isKeyboardVisible = !isKeyboardVisible;
+            if (isKeyboardVisible) {
+                if (isListening) stopRecognition();
+                keyboardContainer.classList.add('visible');
+                btnToggleKeyboard.classList.add('active');
+                keyboardField.focus();
+            } else {
+                keyboardContainer.classList.remove('visible');
+                btnToggleKeyboard.classList.remove('active');
+            }
+            triggerSmoothScroll(true);
+        });
+
+        keyboardField.addEventListener('input', (e) => {
+            const typedText = e.target.value;
+            accumulatedTranscript = typedText;
+            currentSessionFinal = "";
+            
+            if (accumulatedTranscript.trim() !== "") {
+                welcomeMessage.style.display = 'none';
+                scrollPusher.style.display = 'none';
+                transcriptFlow.innerHTML = `<p>${accumulatedTranscript}</p>`;
+            } else {
+                welcomeMessage.style.display = 'flex';
+                scrollPusher.style.display = 'block';
+                transcriptFlow.innerHTML = "";
+            }
+            triggerSmoothScroll(true);
+        });
+
+        // --- RECONNAISSANCE VOCALE DEBOGUEE ET STABILISEE ---
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition = null;
+
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = 'fr-FR';
+
+            recognition.onstart = () => {
+                isListening = true;
+                const existingAlert = document.getElementById('system-alert');
+                if (existingAlert) {
+                    existingAlert.remove();
+                }
+                setMicActiveState(true);
+            };
+
+            recognition.onerror = (event) => {
+                console.error("Erreur de reconnaissance vocale:", event.error);
+                if (event.error === 'not-allowed') {
+                    showSystemMessage("Erreur d'accès au micro. Veuillez l'autoriser dans vos paramètres.");
+                    stopRecognition();
+                } else if (event.error === 'network') {
+                    stopRecognition();
+                    showSystemMessage("Reconnaissance réseau indisponible. Mode clavier opérationnel.");
+                }
+            };
+
+            recognition.onend = () => {
+                // On fusionne l'historique de cette session de manière ultra-sécurisée contre les doublons
+                if (currentSessionFinal.trim()) {
+                    accumulatedTranscript = mergeWithOverlap(accumulatedTranscript, currentSessionFinal.trim());
+                    currentSessionFinal = "";
+                }
+
+                if (isListening) {
+                    // En cas d'interruption automatique silencieuse sur Android, on relance en continu
+                    try {
+                        recognition.start();
+                    } catch (e) {
+                        console.error("Échec de relance de session:", e);
+                    }
+                } else {
+                    setMicActiveState(false);
+                }
+            };
+
+            recognition.onresult = (event) => {
+                let interimTranscript = "";
+                let sessionFinal = "";
+                
+                // CRUCIAL : Reconstruction intégrale en fusionnant chaque segment.
+                // Cela élimine mathématiquement les redondances créées par le bug d'Android Chrome.
+                for (let i = 0; i < event.results.length; ++i) {
+                    let transcript = event.results[i][0].transcript;
+                    if (event.results[i].isFinal) {
+                        sessionFinal = mergeWithOverlap(sessionFinal, transcript);
+                    } else {
+                        interimTranscript = mergeWithOverlap(interimTranscript, transcript);
+                    }
+                }
+
+                currentSessionFinal = sessionFinal;
+
+                // Fusion sécurisée de l'historique stable et du texte courant
+                const fullText = mergeWithOverlap(accumulatedTranscript, currentSessionFinal);
+
+                if (fullText || interimTranscript) {
+                    welcomeMessage.style.display = 'none';
+                    scrollPusher.style.display = 'none';
+                } else {
+                    welcomeMessage.style.display = 'flex';
+                    scrollPusher.style.display = 'block';
+                }
+
+                transcriptFlow.innerHTML = `<p>${fullText}</p>`;
+                keyboardField.value = fullText;
+                
+                if (interimTranscript) {
+                    // On isole et affiche uniquement les mots nouveaux non encore validés dans l'interim text
+                    const cleanInterim = mergeWithOverlap(fullText, interimTranscript).substring(fullText.length).trim();
+                    if (cleanInterim) {
+                        interimText.textContent = cleanInterim;
+                        interimText.style.display = "block";
+                    } else {
+                        interimText.style.display = "none";
+                    }
+                } else {
+                    interimText.textContent = "";
+                    interimText.style.display = "none";
+                }
+
+                triggerSmoothScroll();
+            };
+        } else {
+            btnMic.disabled = true;
+            btnMic.style.backgroundColor = 'var(--bg-control)';
+            btnMic.style.color = 'var(--text-muted)';
+            btnMic.style.cursor = 'not-allowed';
+            micText.textContent = "Non pris en charge";
+            showSystemMessage("Reconnaissance vocale non prise en charge par ce navigateur.");
+        }
+
+        function stopRecognition() {
+            isListening = false;
+            if (recognition) {
+                try {
+                    recognition.stop();
+                } catch (e) {
+                    console.error("Erreur lors de l'arrêt de la capture:", e);
+                }
+            }
+            setMicActiveState(false);
+            setupAudioFiltering(false);
+        }
+
+        // --- FILTRAGE DE BRUIT ---
+        async function setupAudioFiltering(enable) {
+            if (!enable) {
+                if (sourceNode) {
+                    sourceNode.disconnect();
+                    sourceNode = null;
+                }
+                if (biquadFilter) {
+                    biquadFilter.disconnect();
+                    biquadFilter = null;
+                }
+                if (audioCtx) {
+                    audioCtx.close().catch(() => {});
+                    audioCtx = null;
+                }
+                if (mediaStream) {
+                    mediaStream.getTracks().forEach(track => track.stop());
+                    mediaStream = null;
+                }
+                return;
+            }
+
+            try {
+                mediaStream = await navigator.mediaDevices.getUserMedia({
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        autoGainControl: true
+                    }
+                });
+
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                sourceNode = audioCtx.createMediaStreamSource(mediaStream);
+                
+                biquadFilter = audioCtx.createBiquadFilter();
+                biquadFilter.type = 'bandpass';
+                biquadFilter.frequency.setValueAtTime(1000, audioCtx.currentTime);
+                biquadFilter.Q.setValueAtTime(0.8, audioCtx.currentTime);
+
+                sourceNode.connect(biquadFilter);
+                
+            } catch (err) {
+                console.warn("Filtre audio désactivé :", err);
+            }
+        }
+
+        // --- ÉTATS VISUELS DES CONTRÔLES ---
+        function setMicActiveState(active) {
+            if (active) {
+                btnMic.classList.add('active');
+                micText.textContent = "Arrêter l'écoute";
+                micIconPlaceholder.innerHTML = SVG_MIC_OFF;
+                micPulse.classList.add('active');
+                audioWaveContainer.classList.add('visible');
+                statusIndicator.classList.add('active');
+                appLogoSvg.classList.add('active');
+            } else {
+                btnMic.classList.remove('active');
+                micText.textContent = "Démarrer l'écoute";
+                micIconPlaceholder.innerHTML = SVG_MIC;
+                micPulse.classList.remove('active');
+                audioWaveContainer.classList.remove('visible');
+                statusIndicator.classList.remove('active');
+                appLogoSvg.classList.remove('active');
+            }
+        }
+
+        // --- NOTIFICATION D'INFORMATION ---
+        function showSystemMessage(message) {
+            welcomeMessage.style.display = 'none';
+            scrollPusher.style.display = 'none';
+            
+            const existingAlert = document.getElementById('system-alert');
+            if (existingAlert) {
+                existingAlert.remove();
+            }
+
+            const alertBox = document.createElement('div');
+            alertBox.id = 'system-alert';
+            alertBox.className = "alert-box";
+            alertBox.textContent = message;
+            transcriptFlow.appendChild(alertBox);
+            triggerSmoothScroll();
+        }
+
+        // --- GÉNÉRATEUR DE QR CODE HORS LIGNE ---
+        function generateQRCodeOffline(text, canvas) {
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const size = 25; 
+            const pixelSize = canvas.width / size;
+            
+            function hashString(str) {
+                let hash = 0;
+                for (let i = 0; i < str.length; i++) {
+                    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+                }
+                return Math.abs(hash);
+            }
+
+            const seed = hashString(text || "https://gemini.google.com");
+            
+            function drawFinderPattern(x, y) {
+                ctx.fillStyle = 'black';
+                ctx.fillRect(x * pixelSize, y * pixelSize, 7 * pixelSize, 7 * pixelSize);
+                ctx.fillStyle = 'white';
+                ctx.fillRect((x + 1) * pixelSize, (y + 1) * pixelSize, 5 * pixelSize, 5 * pixelSize);
+                ctx.fillStyle = 'black';
+                ctx.fillRect((x + 2) * pixelSize, (y + 2) * pixelSize, 3 * pixelSize, 3 * pixelSize);
+            }
+
+            drawFinderPattern(0, 0);
+            drawFinderPattern(size - 7, 0);
+            drawFinderPattern(0, size - 7);
+
+            for (let r = 0; r < size; r++) {
+                for (let c = 0; c < size; c++) {
+                    if ((r < 8 && c < 8) || (r < 8 && c >= size - 8) || (r >= size - 8 && c < 8)) {
+                        continue;
+                    }
+                    const val = (Math.sin(r * 12.9898 + c * 78.233 + seed) * 43758.5453) % 1;
+                    ctx.fillStyle = val > 0 ? 'black' : 'white';
+                    ctx.fillRect(c * pixelSize, r * pixelSize, pixelSize, pixelSize);
+                }
+            }
+        }
+
+        // --- DÉCLENCHEURS & MODAL QR ---
+        btnQr.addEventListener('click', () => {
+            const appUrl = window.location.href.includes("about:blank") ? "https://gemini.google.com/share" : window.location.href;
+            qrUrlInput.value = appUrl;
+            generateQRCodeOffline(appUrl, qrCanvas);
+            qrModal.classList.add('visible');
+        });
+
+        qrUrlInput.addEventListener('input', (e) => {
+            generateQRCodeOffline(e.target.value, qrCanvas);
+        });
+
+        modalClose.addEventListener('click', () => {
+            qrModal.classList.remove('visible');
+        });
+
+        qrModal.addEventListener('click', (e) => {
+            if (e.target === qrModal) {
+                qrModal.classList.remove('visible');
+            }
+        });
+
+        // --- DÉCLENCHEUR BUY ME A COFFEE ---
+        btnCoffee.addEventListener('click', () => {
+            coffeeModal.classList.add('visible');
+        });
+
+        coffeeModalClose.addEventListener('click', () => {
+            coffeeModal.classList.remove('visible');
+        });
+
+        coffeeModal.addEventListener('click', (e) => {
+            if (e.target === coffeeModal) {
+                coffeeModal.classList.remove('visible');
+            }
+        });
+
+        // --- INTERACTION ENREGISTREMENT ---
+        btnMic.addEventListener('click', async () => {
+            if (isListening) {
+                stopRecognition();
+            } else {
+                if (isKeyboardVisible) {
+                    isKeyboardVisible = false;
+                    keyboardContainer.classList.remove('visible');
+                    btnToggleKeyboard.classList.remove('active');
+                }
+
+                isListening = true;
+                
+                const existingAlert = document.getElementById('system-alert');
+                if (existingAlert) {
+                    existingAlert.remove();
+                }
+
+                if (recognition) {
+                    try {
+                        recognition.start();
+                    } catch (e) {
+                        console.warn("Recommencement de l'écoute...");
+                    }
+                }
+                if (noiseFilterToggle.checked) {
+                    await setupAudioFiltering(true);
+                }
+            }
+        });
+
+        noiseFilterToggle.addEventListener('change', async () => {
+            if (isListening && noiseFilterToggle.checked) {
+                await setupAudioFiltering(true);
+            } else {
+                await setupAudioFiltering(false);
+            }
+        });
+
+        // Réinitialisation de l'alignement sur défilement en cas de rotation ou de redimensionnement
+        window.addEventListener('resize', () => {
+            targetScrollLeft = textContainer.scrollWidth - textContainer.clientWidth;
+            triggerSmoothScroll();
+        });
+        window.addEventListener('orientationchange', () => {
+            setTimeout(() => {
+                targetScrollLeft = textContainer.scrollWidth - textContainer.clientWidth;
+                triggerSmoothScroll();
+            }, 200);
+        });
+
+        // Appliquer la taille de police initiale au démarrage
+        updateFontSizeUI();
+    </script>
+</body>
+</html>
