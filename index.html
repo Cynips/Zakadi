@@ -107,16 +107,81 @@ For any specific use requests or partnerships, please contact me via: return43@h
             gap: 10px;
         }
 
+        /* Styles et micro-animations du nouveau Logo Géométrique */
         .app-logo-icon {
-            width: 32px;
-            height: 32px;
-            color: var(--color-emerald);
-            transition: color 0.3s, transform 0.3s;
+            width: 34px;
+            height: 34px;
+            transition: transform 0.3s;
         }
 
+        /* Structure interne des tracés du logo */
+        .logo-ear-helix {
+            stroke: var(--color-emerald);
+            transition: stroke 0.3s;
+        }
+
+        .logo-inner-z {
+            stroke: var(--text-primary);
+            transition: stroke 0.3s, transform 0.3s;
+            transform-origin: 50px 50px;
+        }
+
+        .logo-wave {
+            stroke: var(--color-emerald);
+            transform-origin: 50px 50px;
+            transition: opacity 0.3s, transform 0.3s;
+        }
+
+        /* Animations lorsque l'écoute vocale est active */
         .app-logo-icon.active {
-            color: #ef4444;
-            animation: pulse-ring 2s infinite ease-in-out;
+            transform: scale(1.05);
+        }
+
+        .app-logo-icon.active .logo-ear-helix {
+            stroke: #ef4444; /* Rouge d'enregistrement */
+        }
+
+        .app-logo-icon.active .logo-inner-z {
+            stroke: var(--text-primary);
+            animation: logo-z-pulse 1.5s infinite ease-in-out;
+        }
+
+        .app-logo-icon.active .logo-wave-left-1 {
+            animation: logo-wave-out-left 1.2s infinite ease-out;
+            animation-delay: 0s;
+        }
+
+        .app-logo-icon.active .logo-wave-left-2 {
+            animation: logo-wave-out-left 1.2s infinite ease-out;
+            animation-delay: 0.4s;
+        }
+
+        .app-logo-icon.active .logo-wave-right-1 {
+            animation: logo-wave-out-right 1.2s infinite ease-out;
+            animation-delay: 0.2s;
+        }
+
+        .app-logo-icon.active .logo-wave-right-2 {
+            animation: logo-wave-out-right 1.2s infinite ease-out;
+            animation-delay: 0.6s;
+        }
+
+        /* Images clés des micro-déplacements du logo */
+        @keyframes logo-z-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(0.93); }
+        }
+
+        @keyframes logo-wave-out-left {
+            0% { opacity: 0.1; transform: translateX(2px) scale(0.95); }
+            50% { opacity: 0.8; }
+            100% { opacity: 0; transform: translateX(-8px) scale(1.05); }
+        }
+
+        @keyframes logo-wave-out-right {
+            0% { opacity: 0.1; transform: translateX(-2px) scale(0.95); }
+            50% { opacity: 0.8; }
+            100% { opacity: 0; transform: translateX(8px) scale(1.05); }
         }
 
         .status-dot {
@@ -823,18 +888,21 @@ For any specific use requests or partnerships, please contact me via: return43@h
     <!-- En-tête -->
     <header>
         <div class="header-logo">
-            <!-- Icône d'oreille personnalisée avec Z central et ondes -->
-            <svg id="app-logo-svg" class="app-logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round">
-                <!-- Ondes sonores gauches -->
-                <path d="M 15 35 A 30 30 0 0 0 15 65" stroke-width="3"/>
-                <path d="M 22 40 A 20 20 0 0 0 22 60" stroke-width="3"/>
-                <!-- Silhouette d'oreille humaine -->
-                <path d="M 55 18 C 30 18, 30 55, 45 75 C 55 88, 75 88, 75 75 C 75 68, 68 62, 72 50 C 74 42, 76 35, 72 25 C 68 18, 62 18, 55 18 Z" />
-                <!-- "Z" stylisé au niveau du lobe/canal -->
-                <path d="M 42 38 C 45 32, 60 32, 58 42 C 55 52, 45 58, 48 66 C 50 68, 54 68, 62 65" stroke-width="5.5" />
-                <!-- Ondes sonores droites -->
-                <path d="M 85 40 A 20 20 0 0 1 85 60" stroke-width="3"/>
-                <path d="M 92 35 A 30 30 0 0 1 92 65" stroke-width="3"/>
+            <!-- Nouveau logo géométrique et minimaliste intégrant "Z" raffiné, l'oreille et les ondes audio directionnelles -->
+            <svg id="app-logo-svg" class="app-logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <!-- Ondes sonores à gauche (Entrée/Écoute) -->
+                <path class="logo-wave logo-wave-left-2" d="M 12 30 A 25 25 0 0 0 12 70" stroke-width="4.5" opacity="0.15"/>
+                <path class="logo-wave logo-wave-left-1" d="M 20 38 A 16 16 0 0 0 20 62" stroke-width="4.5" opacity="0.3"/>
+                
+                <!-- Silhouette géométrique moderne d'oreille externe -->
+                <path class="logo-ear-helix" d="M 45 15 C 26 15 20 36 20 51 C 20 71 33 85 53 85 C 68 85 76 75 76 65 C 76 58 70 56 73 46 C 75 38 78 32 73 24 C 68 16 57 15 45 15 Z" stroke-width="6"/>
+                
+                <!-- Monogramme central "Z" raffiné : barre inférieure plus courte (longueur 18 vs 24) et calée à droite (commence plus à droite, finit plus à droite) -->
+                <path class="logo-inner-z" d="M 36 34 L 60 34 L 46 60 L 64 60" stroke-width="7"/>
+                
+                <!-- Ondes sonores à droite (Sortie/Clarté) -->
+                <path class="logo-wave logo-wave-right-1" d="M 83 38 A 16 16 0 0 1 83 62" stroke-width="4.5" opacity="0.3"/>
+                <path class="logo-wave logo-wave-right-2" d="M 91 30 A 25 25 0 0 1 91 70" stroke-width="4.5" opacity="0.15"/>
             </svg>
             <div class="status-dot" id="status-indicator"></div>
             <h1>Zakadi</h1>
@@ -858,14 +926,21 @@ For any specific use requests or partnerships, please contact me via: return43@h
 
                 <!-- Message de bienvenue -->
                 <div id="welcome-message" class="welcome-screen">
-                    <!-- Grande icône d'oreille personnalisée stylisée en page d'accueil -->
-                    <svg id="welcome-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" style="width: 72px; height: 72px; margin-bottom: 8px;">
-                        <path d="M 15 35 A 30 30 0 0 0 15 65" stroke-width="3"/>
-                        <path d="M 22 40 A 20 20 0 0 0 22 60" stroke-width="3"/>
-                        <path d="M 55 18 C 30 18, 30 55, 45 75 C 55 88, 75 88, 75 75 C 75 68, 68 62, 72 50 C 74 42, 76 35, 72 25 C 68 18, 62 18, 55 18 Z" />
-                        <path d="M 42 38 C 45 32, 60 32, 58 42 C 55 52, 45 58, 48 66 C 50 68, 54 68, 62 65" stroke-width="5.5" />
-                        <path d="M 85 40 A 20 20 0 0 1 85 60" stroke-width="3"/>
-                        <path d="M 92 35 A 30 30 0 0 1 92 65" stroke-width="3"/>
+                    <!-- Grand logo géométrique moderne en page d'accueil -->
+                    <svg id="welcome-svg" class="app-logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke-linecap="round" stroke-linejoin="round" style="width: 80px; height: 80px; margin-bottom: 8px;">
+                        <!-- Ondes sonores à gauche (Entrée) -->
+                        <path class="logo-wave logo-wave-left-2" d="M 12 30 A 25 25 0 0 0 12 70" stroke-width="4.5" opacity="0.15"/>
+                        <path class="logo-wave logo-wave-left-1" d="M 20 38 A 16 16 0 0 0 20 62" stroke-width="4.5" opacity="0.3"/>
+                        
+                        <!-- Oreille externe géométrique -->
+                        <path class="logo-ear-helix" d="M 45 15 C 26 15 20 36 20 51 C 20 71 33 85 53 85 C 68 85 76 75 76 65 C 76 58 70 56 73 46 C 75 38 78 32 73 24 C 68 16 57 15 45 15 Z" stroke-width="6"/>
+                        
+                        <!-- Monogramme "Z" raffiné -->
+                        <path class="logo-inner-z" d="M 36 34 L 60 34 L 46 60 L 64 60" stroke-width="7"/>
+                        
+                        <!-- Ondes sonores à droite (Sortie) -->
+                        <path class="logo-wave logo-wave-right-1" d="M 83 38 A 16 16 0 0 1 83 62" stroke-width="4.5" opacity="0.3"/>
+                        <path class="logo-wave logo-wave-right-2" d="M 91 30 A 25 25 0 0 1 91 70" stroke-width="4.5" opacity="0.15"/>
                     </svg>
                     <div>
                         <p class="welcome-title">Appuyez sur le bouton vert ci-dessous pour parler.</p>
@@ -980,6 +1055,7 @@ For any specific use requests or partnerships, please contact me via: return43@h
     <script>
         // Références DOM
         const appLogoSvg = document.getElementById('app-logo-svg');
+        const welcomeSvg = document.getElementById('welcome-svg');
         const btnMic = document.getElementById('btn-mic');
         const micIconPlaceholder = document.getElementById('mic-icon-placeholder');
         const micPulse = document.getElementById('mic-pulse');
@@ -1412,6 +1488,7 @@ For any specific use requests or partnerships, please contact me via: return43@h
                 audioWaveContainer.classList.add('visible');
                 statusIndicator.classList.add('active');
                 appLogoSvg.classList.add('active');
+                welcomeSvg.classList.add('active');
             } else {
                 btnMic.classList.remove('active');
                 micText.textContent = "Démarrer l'écoute";
@@ -1420,6 +1497,7 @@ For any specific use requests or partnerships, please contact me via: return43@h
                 audioWaveContainer.classList.remove('visible');
                 statusIndicator.classList.remove('active');
                 appLogoSvg.classList.remove('active');
+                welcomeSvg.classList.remove('active');
             }
         }
 
