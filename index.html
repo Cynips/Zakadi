@@ -15,6 +15,8 @@ For any specific use requests or partnerships, please contact me via: return43@h
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Zakadi - Communication Intuitive</title>
+    <!-- Chargement sécurisé de la bibliothèque légère de génération de QR Code réels -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <style>
         /* CSS moderne, natif, ultra-contrasté et réactif au thème système (clair/sombre) */
         :root {
@@ -698,7 +700,7 @@ For any specific use requests or partnerships, please contact me via: return43@h
             box-shadow: 0 4px 10px var(--shadow-color);
         }
 
-        /* Modal QR Code */
+        /* Modaux universels */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -785,7 +787,7 @@ For any specific use requests or partnerships, please contact me via: return43@h
         .modal-link {
             width: 100%;
             padding: 12px;
-            background-color: #0070ba; /* Couleur PayPal */
+            background-color: #0070ba; /* Couleur bleue officielle PayPal */
             color: white;
             border-radius: 10px;
             font-weight: 600;
@@ -909,7 +911,7 @@ For any specific use requests or partnerships, please contact me via: return43@h
                 </button>
             </div>
 
-            <!-- Groupe actions secondaires : Clavier + Copier + QR Code -->
+            <!-- Groupe actions secondaires : Clavier + Copier + QR Code + Café -->
             <div class="secondary-actions-group">
                 <!-- Bouton Clavier Seul -->
                 <button id="btn-toggle-keyboard" class="action-btn-icon" aria-label="Saisie au clavier">
@@ -1039,15 +1041,12 @@ For any specific use requests or partnerships, please contact me via: return43@h
         let isScrolledUp = false;
 
         // --- ALGORITHME DE FUSION INTELLIGENTE ET DE-DUPLICATION DES FLUX (OVERLAP MERGE) ---
-        // Cette fonction mathématique recherche le chevauchement optimal de mots entre la fin d'un texte (A) 
-        // et le début d'un texte (B) pour fusionner de façon invisible les répétitions introduites par Android.
         function mergeWithOverlap(str1, str2) {
             str1 = (str1 || "").trim();
             str2 = (str2 || "").trim();
             if (!str1) return str2;
             if (!str2) return str1;
 
-            // Normalisation des chaînes de caractères pour comparaison (minuscules, sans accents ou ponctuation complexe)
             const clean = (s) => s.toLowerCase()
                                   .replace(/['’]/g, "'") // Standardisation de l'apostrophe française
                                   .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?"«»“]/g, "")
@@ -1060,25 +1059,22 @@ For any specific use requests or partnerships, please contact me via: return43@h
             let maxOverlapWords = 0;
             const minLen = Math.min(words1.length, words2.length);
 
-            // Recherche glissante de correspondances de la plus grande séquence vers la plus petite (Optimisation)
             for (let i = minLen; i >= 1; i--) {
                 const sub1 = words1.slice(-i).join(" ");
                 const sub2 = words2.slice(0, i).join(" ");
 
                 if (sub1 === sub2) {
                     maxOverlapWords = i;
-                    break; // Le plus grand chevauchement est trouvé
+                    break;
                 }
             }
 
             if (maxOverlapWords > 0) {
-                // Un chevauchement a été identifié : on ampute le début de la seconde phrase
                 const origWords2 = str2.split(/\s+/);
                 const nonOverlapPart = origWords2.slice(maxOverlapWords).join(" ");
                 return (str1 + (nonOverlapPart ? " " + nonOverlapPart : "")).trim();
             }
 
-            // Aucun doublon détecté, simple concaténation avec espace de confort
             return (str1 + " " + str2).trim();
         }
 
@@ -1110,9 +1106,7 @@ For any specific use requests or partnerships, please contact me via: return43@h
             }
         }
 
-        // Commande intelligente de défilement vers le bas respectant la lecture de l'utilisateur
         function triggerSmoothScroll(force = false) {
-            // Si l'utilisateur a fait défiler vers le haut pour lire, on bloque l'auto-scroll (sauf action forcée)
             if (isScrolledUp && !force) return; 
             
             const isLandscape = window.matchMedia("(orientation: landscape) and (max-height: 500px)").matches;
@@ -1124,7 +1118,6 @@ For any specific use requests or partnerships, please contact me via: return43@h
                     requestAnimationFrame(updateTickerScroll);
                 }
             } else {
-                // Défilement vertical fluide natif
                 textContainer.scrollTo({
                     top: textContainer.scrollHeight,
                     behavior: 'smooth'
@@ -1132,12 +1125,11 @@ For any specific use requests or partnerships, please contact me via: return43@h
             }
         }
 
-        // --- ECOUTEURS DE DEFILEMENT (POUR BLOQUER L'AUTO-SCROLL SI L'UTILISATEUR LIT PLUS HAUT) ---
         textContainer.addEventListener('scroll', () => {
             const isLandscape = window.matchMedia("(orientation: landscape) and (max-height: 500px)").matches;
             if (isLandscape) {
                 const maxScrollLeft = textContainer.scrollWidth - textContainer.clientWidth;
-                isScrolledUp = textContainer.scrollLeft < maxScrollLeft - 30; // 30px de marge
+                isScrolledUp = textContainer.scrollLeft < maxScrollLeft - 30;
             } else {
                 const maxScrollTop = textContainer.scrollHeight - textContainer.clientHeight;
                 isScrolledUp = textContainer.scrollTop < maxScrollTop - 30;
@@ -1284,14 +1276,12 @@ For any specific use requests or partnerships, please contact me via: return43@h
             };
 
             recognition.onend = () => {
-                // On fusionne l'historique de cette session de manière ultra-sécurisée contre les doublons
                 if (currentSessionFinal.trim()) {
                     accumulatedTranscript = mergeWithOverlap(accumulatedTranscript, currentSessionFinal.trim());
                     currentSessionFinal = "";
                 }
 
                 if (isListening) {
-                    // En cas d'interruption automatique silencieuse sur Android, on relance en continu
                     try {
                         recognition.start();
                     } catch (e) {
@@ -1306,8 +1296,6 @@ For any specific use requests or partnerships, please contact me via: return43@h
                 let interimTranscript = "";
                 let sessionFinal = "";
                 
-                // CRUCIAL : Reconstruction intégrale en fusionnant chaque segment.
-                // Cela élimine mathématiquement les redondances créées par le bug d'Android Chrome.
                 for (let i = 0; i < event.results.length; ++i) {
                     let transcript = event.results[i][0].transcript;
                     if (event.results[i].isFinal) {
@@ -1318,8 +1306,6 @@ For any specific use requests or partnerships, please contact me via: return43@h
                 }
 
                 currentSessionFinal = sessionFinal;
-
-                // Fusion sécurisée de l'historique stable et du texte courant
                 const fullText = mergeWithOverlap(accumulatedTranscript, currentSessionFinal);
 
                 if (fullText || interimTranscript) {
@@ -1334,7 +1320,6 @@ For any specific use requests or partnerships, please contact me via: return43@h
                 keyboardField.value = fullText;
                 
                 if (interimTranscript) {
-                    // On isole et affiche uniquement les mots nouveaux non encore validés dans l'interim text
                     const cleanInterim = mergeWithOverlap(fullText, interimTranscript).substring(fullText.length).trim();
                     if (cleanInterim) {
                         interimText.textContent = cleanInterim;
@@ -1456,52 +1441,37 @@ For any specific use requests or partnerships, please contact me via: return43@h
             triggerSmoothScroll();
         }
 
-        // --- GÉNÉRATEUR DE QR CODE HORS LIGNE ---
+        // --- GÉNÉRATEUR DE QR CODE ROBUSTE & RÉEL (VIA QRious) ---
         function generateQRCodeOffline(text, canvas) {
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            const size = 25; 
-            const pixelSize = canvas.width / size;
-            
-            function hashString(str) {
-                let hash = 0;
-                for (let i = 0; i < str.length; i++) {
-                    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+            try {
+                if (typeof QRious !== 'undefined') {
+                    new QRious({
+                        element: canvas,
+                        value: text,
+                        size: 200,
+                        level: 'H', // Taux de correction maximal (idéal pour un scan rapide)
+                        background: 'white',
+                        foreground: 'black'
+                    });
+                } else {
+                    // Message de secours si le chargement réseau de la librairie échoue
+                    const ctx = canvas.getContext('2d');
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = 'black';
+                    ctx.font = '14px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText("Impossible de charger", canvas.width / 2, 80);
+                    ctx.fillText("le module QR code.", canvas.width / 2, 110);
+                    ctx.fillText("Vérifiez votre connexion.", canvas.width / 2, 140);
                 }
-                return Math.abs(hash);
-            }
-
-            const seed = hashString(text || "https://gemini.google.com");
-            
-            function drawFinderPattern(x, y) {
-                ctx.fillStyle = 'black';
-                ctx.fillRect(x * pixelSize, y * pixelSize, 7 * pixelSize, 7 * pixelSize);
-                ctx.fillStyle = 'white';
-                ctx.fillRect((x + 1) * pixelSize, (y + 1) * pixelSize, 5 * pixelSize, 5 * pixelSize);
-                ctx.fillStyle = 'black';
-                ctx.fillRect((x + 2) * pixelSize, (y + 2) * pixelSize, 3 * pixelSize, 3 * pixelSize);
-            }
-
-            drawFinderPattern(0, 0);
-            drawFinderPattern(size - 7, 0);
-            drawFinderPattern(0, size - 7);
-
-            for (let r = 0; r < size; r++) {
-                for (let c = 0; c < size; c++) {
-                    if ((r < 8 && c < 8) || (r < 8 && c >= size - 8) || (r >= size - 8 && c < 8)) {
-                        continue;
-                    }
-                    const val = (Math.sin(r * 12.9898 + c * 78.233 + seed) * 43758.5453) % 1;
-                    ctx.fillStyle = val > 0 ? 'black' : 'white';
-                    ctx.fillRect(c * pixelSize, r * pixelSize, pixelSize, pixelSize);
-                }
+            } catch (err) {
+                console.error("Erreur lors de la génération du QR Code :", err);
             }
         }
 
         // --- DÉCLENCHEURS & MODAL QR ---
         btnQr.addEventListener('click', () => {
-            const appUrl = window.location.href.includes("about:blank") ? "https://gemini.google.com/share" : window.location.href;
+            const appUrl = "https://cynips.github.io/Zakadi/";
             qrUrlInput.value = appUrl;
             generateQRCodeOffline(appUrl, qrCanvas);
             qrModal.classList.add('visible');
@@ -1521,7 +1491,7 @@ For any specific use requests or partnerships, please contact me via: return43@h
             }
         });
 
-        // --- DÉCLENCHEUR BUY ME A COFFEE ---
+        // --- DÉCLENCHEURS & MODAL DON (COFFEE) ---
         btnCoffee.addEventListener('click', () => {
             coffeeModal.classList.add('visible');
         });
